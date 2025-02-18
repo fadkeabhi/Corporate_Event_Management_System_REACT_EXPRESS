@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
+import { createEvent } from "@/services/api";
+import { DateTimePicker } from "@/components/ui/date-time-picker";
 
 export default function CreateEvent() {
   const { user, loading } = useAuth();
@@ -52,12 +54,7 @@ export default function CreateEvent() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        "http://localhost:5001/api/events/create",
-        formData,
-        { headers: { Authorization: token } }
-      );
+      await createEvent(formData);
       navigate("/dashboard");
     } catch (err) {
       setError("Error creating event");
@@ -77,7 +74,10 @@ export default function CreateEvent() {
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <Input name="title" placeholder="Event Title" onChange={handleChange} required />
             <Input name="description" placeholder="Description" onChange={handleChange} />
-            <Input name="date" type="date" onChange={handleChange} required />
+            <DateTimePicker
+              onChange={(date) => setFormData({ ...formData, date: date.toISOString() })
+            }
+            />
             <Input name="venue" placeholder="Venue" onChange={handleChange} required />
             <Input name="agenda" placeholder="Agenda" onChange={handleChange} />
             <Input name="capacity" type="number" placeholder="Capacity" onChange={handleChange} required />

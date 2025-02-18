@@ -16,7 +16,7 @@ export const loginUser = async (userData) => {
 };
 
 
-const axiosInstanceLoggedIn = axios.create({
+export const axiosInstanceLoggedIn = axios.create({
   baseURL: API_URL,
   withCredentials: true,
 });
@@ -38,5 +38,6 @@ export const getCurrentUser = async () => {
 
 
 export const createEvent = async (formData) => {
-  return await axiosInstanceLoggedIn.post(`/api/event/create`, formData);
+  return await axiosInstanceLoggedIn.post(`/api/events/create`, formData);
 };
+

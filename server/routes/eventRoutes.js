@@ -32,7 +32,25 @@ router.post("/create", authMiddleware, async (req, res) => {
   }
 });
 
+// Get event by ID
+router.get("/:eventId", authMiddleware, async (req, res) => {
+  try {
+    const { eventId } = req.params;
 
+    const event = await Event.findById(eventId)
+      .populate("createdBy", "name email")
+      .populate("attendees", "name email")
+      .populate("guests", "name email");
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    res.status(200).json(event);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching event", error });
+  }
+});
 
 
 // Edit an event (Only creator can edit)
@@ -135,5 +153,56 @@ router.post("/:eventId/add-attendee", authMiddleware, async (req, res) => {
       res.status(500).json({ message: "Error removing attendee", error });
     }
   });
+
+
+// Add Guest
+router.post("/:eventId/add-guest", authMiddleware, async (req, res) => {
+  try {
+    const { name, email } = req.body;
+    const { eventId } = req.params;
+    const userId = req.user.id;
+
+    // Ensure event exists
+    const event = await Event.findById(eventId);
+    if (!event) return res.status(404).json({ message: "Event not found" });
+
+    // Create and save guest
+    const guest = new Guest({ name, email, event: eventId, invitedBy: userId });
+    await guest.save();
+
+    // Add guest to event
+    event.guests.push(guest._id);
+    await event.save();
+
+    res.status(201).json({ message: "Guest added", guest });
+  } catch (error) {
+    res.status(500).json({ message: "Error adding guest", error });
+  }
+});
+
+// Remove Guest
+router.delete("/:eventId/remove-guest/:guestId", authMiddleware, async (req, res) => {
+  try {
+    const { eventId, guestId } = req.params;
+
+    // Ensure event and guest exist
+    const event = await Event.findById(eventId);
+    if (!event) return res.status(404).json({ message: "Event not found" });
+
+    const guest = await Guest.findById(guestId);
+    if (!guest) return res.status(404).json({ message: "Guest not found" });
+
+    // Remove guest from event
+    event.guests = event.guests.filter((id) => id.toString() !== guestId);
+    await event.save();
+
+    // Delete guest
+    await Guest.findByIdAndDelete(guestId);
+
+    res.json({ message: "Guest removed successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error removing guest", error });
+  }
+});
 
 module.exports = router;
