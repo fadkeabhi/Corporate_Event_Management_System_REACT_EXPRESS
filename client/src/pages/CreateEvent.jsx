@@ -1,0 +1,110 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import axios from "axios";
+
+export default function CreateEvent() {
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    date: "",
+    venue: "",
+    agenda: "",
+    capacity: "",
+    speakers: [{ name: "", designation: "" }], // Multiple speakers
+  });
+
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleChange = (e, index = null, field = null) => {
+    if (index !== null && field) {
+      const updatedSpeakers = [...formData.speakers];
+      updatedSpeakers[index][field] = e.target.value;
+      setFormData({ ...formData, speakers: updatedSpeakers });
+    } else {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
+  };
+
+  const addSpeaker = () => {
+    setFormData({
+      ...formData,
+      speakers: [...formData.speakers, { name: "", designation: "" }],
+    });
+  };
+
+  const removeSpeaker = (index) => {
+    const updatedSpeakers = formData.speakers.filter((_, i) => i !== index);
+    setFormData({ ...formData, speakers: updatedSpeakers });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(
+        "http://localhost:5001/api/event/create",
+        formData,
+        { headers: { Authorization: token } }
+      );
+      navigate("/dashboard");
+    } catch (err) {
+      setError("Error creating event");
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center h-screen w-screen bg-gray-100">
+      <Card className="w-full max-w-lg shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-center text-3xl font-bold">Create Event</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            <Input name="title" placeholder="Event Title" onChange={handleChange} required />
+            <Input name="description" placeholder="Description" onChange={handleChange} />
+            <Input name="date" type="date" onChange={handleChange} required />
+            <Input name="venue" placeholder="Venue" onChange={handleChange} required />
+            <Input name="agenda" placeholder="Agenda" onChange={handleChange} />
+            <Input name="capacity" type="number" placeholder="Capacity" onChange={handleChange} required />
+
+            {/* Dynamic Speaker Fields */}
+            <div className="space-y-2">
+              <p className="text-lg font-semibold">Speakers</p>
+              {formData.speakers.map((speaker, index) => (
+                <div key={index} className="flex space-x-2">
+                  <Input
+                    placeholder="Name"
+                    value={speaker.name}
+                    onChange={(e) => handleChange(e, index, "name")}
+                    required
+                  />
+                  <Input
+                    placeholder="Designation"
+                    value={speaker.designation}
+                    onChange={(e) => handleChange(e, index, "designation")}
+                    required
+                  />
+                  {index > 0 && (
+                    <Button type="button" className="bg-red-500" onClick={() => removeSpeaker(index)}>
+                      ✖
+                    </Button>
+                  )}
+                </div>
+              ))}
+              <Button type="button" className="mt-2 w-full" onClick={addSpeaker}>
+                ➕ Add Speaker
+              </Button>
+            </div>
+
+            <Button type="submit" className="w-full">Create Event</Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
