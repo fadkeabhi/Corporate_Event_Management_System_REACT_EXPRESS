@@ -32,6 +32,27 @@ router.post("/create", authMiddleware, async (req, res) => {
   }
 });
 
+// Search Users
+router.get("/search-users", authMiddleware, async (req, res) => {
+  try {
+      const { query } = req.query;
+      if (!query) {
+          return res.status(400).json({ message: "Query parameter is required" });
+      }
+      
+      const users = await User.find({
+          $or: [
+              { name: { $regex: query, $options: "i" } },
+              { email: { $regex: query, $options: "i" } },
+          ],
+      }).select("name email").limit(10);
+
+      res.status(200).json(users);
+  } catch (error) {
+      res.status(500).json({ message: "Error searching users", error });
+  }
+});
+
 // Get event by ID
 router.get("/:eventId", authMiddleware, async (req, res) => {
   try {
@@ -204,5 +225,8 @@ router.delete("/:eventId/remove-guest/:guestId", authMiddleware, async (req, res
     res.status(500).json({ message: "Error removing guest", error });
   }
 });
+
+
+
 
 module.exports = router;

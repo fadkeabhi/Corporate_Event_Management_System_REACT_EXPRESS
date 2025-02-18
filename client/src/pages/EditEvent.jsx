@@ -69,24 +69,6 @@ export default function EditEvent() {
     setFormData({ ...formData, speakers: updatedSpeakers });
   };
 
-  const addAttendee = async (email) => {
-    try {
-      const res = await axiosInstanceLoggedIn.post(
-        `/api/events/${eventId}/add-attendee`,
-        { email },
-      );
-      setFormData({ ...formData, attendees: [...formData.attendees, res.data.user] });
-    } catch (error) {
-      setError("Error adding attendee");
-    }
-  };
-
-  const removeAttendee = (userId) => {
-    setFormData({
-      ...formData,
-      attendees: formData.attendees.filter((user) => user._id !== userId),
-    });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();

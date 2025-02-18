@@ -29,6 +29,10 @@ export default function EditEventPeoples() {
     const [guestData, setGuestData] = useState({ name: "", email: "" });
     const [attendeeEmail, setAttendeeEmail] = useState("");
 
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchResults, setSearchResults] = useState([]);
+
+
     useEffect(() => {
         const fetchEvent = async () => {
             try {
@@ -50,9 +54,39 @@ export default function EditEventPeoples() {
         }
     }, [user, loading, navigate, eventId]);
 
-    // Add Attendee
-    const addAttendee = async () => {
+
+    const handleSearchChange = async (e) => {
+        setSearchQuery(e.target.value);
+
+        if (e.target.value.trim() === "") {
+            setSearchResults([]);
+            return;
+        }
+
         try {
+            const res = await axiosInstanceLoggedIn.get(
+                `/api/events/search-users?query=${e.target.value}`
+            );
+            setSearchResults(res.data);
+        } catch (error) {
+            console.error("Error searching users", error);
+        }
+    };
+
+
+    // Add Attendee
+    const addAttendee = async ({email}) => {
+        try {
+            if (email) {
+                const res = await axiosInstanceLoggedIn.post(
+                    `/api/events/${eventId}/add-attendee`,
+                    { email: attendeeEmail }
+                );
+                setFormData({ ...formData, attendees: [...formData.attendees, res.data.user] });
+                setAttendeeEmail("");
+                return;
+            }
+
             if (!attendeeEmail) return;
             const res = await axiosInstanceLoggedIn.post(
                 `/api/events/${eventId}/add-attendee`,
@@ -131,21 +165,39 @@ export default function EditEventPeoples() {
                         <p className="text-lg font-semibold">Attendees</p>
                         <div className="flex space-x-2">
                             <Input
-                                placeholder="Attendee Email"
-                                value={attendeeEmail}
-                                onChange={(e) => setAttendeeEmail(e.target.value)}
+                                placeholder="Search Attendee (Name/Email)"
+                                value={searchQuery}
+                                onChange={handleSearchChange}
                             />
                             <Button type="button" onClick={addAttendee}>Add</Button>
                         </div>
+                        {searchResults.length > 0 && (
+                            <ul className="bg-white shadow-lg mt-2 rounded-md">
+                                {searchResults.map((user) => (
+                                    <li
+                                        key={user._id}
+                                        className="cursor-pointer p-2 hover:bg-gray-100"
+                                        onClick={() => {
+                                            setAttendeeEmail(user.email);
+                                            addAttendee(user.email);
+                                            setSearchResults([]);
+                                        }}
+                                    >
+                                        {user.name} ({user.email})
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                         <ul>
                             {formData.attendees.map((attendee) => (
                                 <li key={attendee._id} className="flex justify-between items-center bg-gray-200 p-2 rounded-md">
-                                    {attendee.email}
+                                    {attendee.name} - {attendee.email}
                                     <Button type="button" className="bg-red-500" onClick={() => removeAttendee(attendee._id)}>Remove</Button>
                                 </li>
                             ))}
                         </ul>
                     </div>
+
 
                     {/* Guest Management */}
                     <div className="space-y-4 mt-4">
