@@ -34,7 +34,7 @@ app.get('/', async (req, res) => {
 })
 
 app.use("/api/auth", authRoutes);
-app.use("/api/event", eventRoutes);
+app.use("/api/events", eventRoutes);
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {

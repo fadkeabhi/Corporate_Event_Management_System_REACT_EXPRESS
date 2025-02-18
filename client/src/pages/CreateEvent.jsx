@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext"; // Import auth context
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 
 export default function CreateEvent() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -13,11 +16,16 @@ export default function CreateEvent() {
     venue: "",
     agenda: "",
     capacity: "",
-    speakers: [{ name: "", designation: "" }], // Multiple speakers
+    speakers: [{ name: "", designation: "" }],
   });
 
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/login"); // Redirect to login if not authenticated
+    }
+  }, [user, loading, navigate]);
 
   const handleChange = (e, index = null, field = null) => {
     if (index !== null && field) {
@@ -46,7 +54,7 @@ export default function CreateEvent() {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        "http://localhost:5001/api/event/create",
+        "http://localhost:5001/api/events/create",
         formData,
         { headers: { Authorization: token } }
       );
@@ -55,6 +63,8 @@ export default function CreateEvent() {
       setError("Error creating event");
     }
   };
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="flex flex-col items-center justify-center h-screen w-screen bg-gray-100">
