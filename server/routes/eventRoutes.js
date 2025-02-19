@@ -4,6 +4,18 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
+// GET all events
+router.get("/", async (req, res) => {
+  try {
+    const events = await Event.find()
+      .sort({ date: -1 })
+      .populate("attendees guests createdBy");
+    res.json(events);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching events" });
+  }
+});
+
 // Create a new event (Any authenticated user)
 router.post("/create", authMiddleware, async (req, res) => {
   try {
