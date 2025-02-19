@@ -111,7 +111,12 @@ export default function EventsDashboard() {
                             </CardContent>
                             <CardFooter className="flex justify-between">
                                 <Badge variant="outline">{event.agenda}</Badge>
-                                <Button size="sm">Register</Button>
+                                <div className="space-x-2">
+                                    {event?.createdBy?._id === user?._id && (
+                                        <Button size="sm" onClick={() => navigate(`/event/${event._id}`)}>Edit</Button>
+                                    )}
+                                    <Button size="sm">Register</Button>
+                                </div>
                             </CardFooter>
                         </Card>
                     ))
