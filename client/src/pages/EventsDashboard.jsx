@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { format, isFuture, isPast } from "date-fns";
 import { CalendarIcon, MapPinIcon, UsersIcon } from "lucide-react";
+import Header from "@/pages/Header";  // Import the Header component
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -82,92 +83,95 @@ export default function EventsDashboard() {
     };
 
     return (
-        <div className="p-4 space-y-6 h-screen w-screen bg-gray-100">
-            <h1 className="text-3xl font-bold text-gray-900">Events Dashboard</h1>
+        <div className="flex flex-col min-h-screen bg-gray-100">
+            <Header />  {/* Add the Header component */}
+            <div className="p-4 space-y-6 flex-grow">
+                <h1 className="text-3xl font-bold text-gray-900">Events Dashboard</h1>
 
-            {/* Filter Buttons */}
-            <div className="flex space-x-4">
-            <Button variant={filter === "attending" ? "default" : "outline"} className={filter === "attending" ? "" : "text-black"} onClick={() => setFilter("attending")}>
-                    Attending
-                </Button>
-                <Button variant={filter === "upcoming" ? "default" : "outline"} className={filter === "upcoming" ? "" : "text-black"} onClick={() => setFilter("upcoming")}>
-                    Upcoming
-                </Button>
-                <Button variant={filter === "past" ? "default" : "outline"} className={filter === "past" ? "" : "text-black"} onClick={() => setFilter("past")}>
-                    Past
-                </Button>
-            </div>
+                {/* Filter Buttons */}
+                <div className="flex space-x-4">
+                    <Button variant={filter === "attending" ? "default" : "outline"} className={filter === "attending" ? "" : "text-black"} onClick={() => setFilter("attending")}>
+                        Attending
+                    </Button>
+                    <Button variant={filter === "upcoming" ? "default" : "outline"} className={filter === "upcoming" ? "" : "text-black"} onClick={() => setFilter("upcoming")}>
+                        Upcoming
+                    </Button>
+                    <Button variant={filter === "past" ? "default" : "outline"} className={filter === "past" ? "" : "text-black"} onClick={() => setFilter("past")}>
+                        Past
+                    </Button>
+                </div>
 
-            {/* Event Cards */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {filteredEvents.length > 0 ? (
-                    filteredEvents.map((event) => (
-                        <Card key={event._id} className="flex flex-col">
-                            <CardHeader>
-                                <CardTitle>{event.title}</CardTitle>
-                                <CardDescription>{event.description}</CardDescription>
-                            </CardHeader>
-                            <CardContent className="flex-grow">
-                                <div className="space-y-2">
-                                    <div className="flex items-center">
-                                        <CalendarIcon className="mr-2 h-4 w-4 opacity-70" />
-                                        <span className="text-sm">
-                                            {format(new Date(event.date), "PPP")} at {format(new Date(event.date), "p")}
-                                        </span>
+                {/* Event Cards */}
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {filteredEvents.length > 0 ? (
+                        filteredEvents.map((event) => (
+                            <Card key={event._id} className="flex flex-col">
+                                <CardHeader>
+                                    <CardTitle>{event.title}</CardTitle>
+                                    <CardDescription>{event.description}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="flex-grow">
+                                    <div className="space-y-2">
+                                        <div className="flex items-center">
+                                            <CalendarIcon className="mr-2 h-4 w-4 opacity-70" />
+                                            <span className="text-sm">
+                                                {format(new Date(event.date), "PPP")} at {format(new Date(event.date), "p")}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <MapPinIcon className="mr-2 h-4 w-4 opacity-70" />
+                                            <span className="text-sm">{event.venue}</span>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <UsersIcon className="mr-2 h-4 w-4 opacity-70" />
+                                            <span className="text-sm">Capacity: {event.capacity}</span>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center">
-                                        <MapPinIcon className="mr-2 h-4 w-4 opacity-70" />
-                                        <span className="text-sm">{event.venue}</span>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <UsersIcon className="mr-2 h-4 w-4 opacity-70" />
-                                        <span className="text-sm">Capacity: {event.capacity}</span>
-                                    </div>
-                                </div>
-                                <Separator className="my-4" />
-                                <div>
-                                    <h4 className="text-sm font-semibold mb-2">Speakers:</h4>
-                                    <div className="flex flex-wrap gap-2">
-                                        {event.speakers.map((speaker, index) => (
-                                            <div key={index} className="flex items-center space-x-2">
-                                                <Avatar className="h-6 w-6">
-                                                    <AvatarFallback>{speaker.name[0]}</AvatarFallback>
-                                                </Avatar>
-                                                <div className="text-sm">
-                                                    <p className="font-medium">{speaker.name}</p>
-                                                    <p className="text-xs text-muted-foreground">{speaker.designation}</p>
+                                    <Separator className="my-4" />
+                                    <div>
+                                        <h4 className="text-sm font-semibold mb-2">Speakers:</h4>
+                                        <div className="flex flex-wrap gap-2">
+                                            {event.speakers.map((speaker, index) => (
+                                                <div key={index} className="flex items-center space-x-2">
+                                                    <Avatar className="h-6 w-6">
+                                                        <AvatarFallback>{speaker.name[0]}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="text-sm">
+                                                        <p className="font-medium">{speaker.name}</p>
+                                                        <p className="text-xs text-muted-foreground">{speaker.designation}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                            </CardContent>
-                            <CardFooter className="flex justify-between">
-                                <Badge variant="outline">{event.agenda}</Badge>
-                                <div className="space-x-2">
-                                    {event?.createdBy?._id === user?._id && (
-                                        <Button size="sm" onClick={() => navigate(`/event/${event._id}`)}>Edit</Button>
-                                    )}
-                                    {event.attendees.some(attendee => attendee._id === user?._id) ? (
-                                        <Button size="sm" variant="secondary" disabled>
-                                            Registered
-                                        </Button>
-                                    ) : (
-                                        <Button 
-                                            size="sm" 
-                                            onClick={() => handleRegister(event._id)} 
-                                            disabled={isRegistering}
-                                        >
-                                            {isRegistering ? "Registering..." : "Register"}
-                                        </Button>
-                                    )}
-                                </div>
-                            </CardFooter>
-                        </Card>
-                    ))
-                ) : (
-                    <p className="text-center text-gray-500 w-full">No events found.</p>
-                )}
+                                </CardContent>
+                                <CardFooter className="flex justify-between">
+                                    <Badge variant="outline">{event.agenda}</Badge>
+                                    <div className="space-x-2">
+                                        {event?.createdBy?._id === user?._id && (
+                                            <Button size="sm" onClick={() => navigate(`/event/${event._id}`)}>Edit</Button>
+                                        )}
+                                        {event.attendees.some(attendee => attendee._id === user?._id) ? (
+                                            <Button size="sm" variant="secondary" disabled>
+                                                Registered
+                                            </Button>
+                                        ) : (
+                                            <Button 
+                                                size="sm" 
+                                                onClick={() => handleRegister(event._id)} 
+                                                disabled={isRegistering}
+                                            >
+                                                {isRegistering ? "Registering..." : "Register"}
+                                            </Button>
+                                        )}
+                                    </div>
+                                </CardFooter>
+                            </Card>
+                        ))
+                    ) : (
+                        <p className="text-center text-gray-500 w-full">No events found.</p>
+                    )}
+                </div>
             </div>
         </div>
     );

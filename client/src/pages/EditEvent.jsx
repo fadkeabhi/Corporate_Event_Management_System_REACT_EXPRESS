@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import Header from "@/pages/Header";  // Import the Header component
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -90,44 +91,47 @@ export default function EditEvent() {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen w-screen bg-gray-100">
-      <Card className="w-full max-w-lg shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-center text-3xl font-bold">Edit Event</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input name="title" value={formData.title} placeholder="Event Title" onChange={handleChange} required />
-            <Input name="description" value={formData.description} placeholder="Description" onChange={handleChange} />
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      <Header />  {/* Add the Header component */}
+      <div className="flex-grow flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-center text-3xl font-bold">Edit Event</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <Input name="title" value={formData.title} placeholder="Event Title" onChange={handleChange} required />
+              <Input name="description" value={formData.description} placeholder="Description" onChange={handleChange} />
 
-            <DateTimePicker
-              mongooseDateTime={formData.date ? formData.date : new Date()}
-              onChange={(date) => setFormData({ ...formData, date: date.toISOString() })}
-            />
+              <DateTimePicker
+                mongooseDateTime={formData.date ? formData.date : new Date()}
+                onChange={(date) => setFormData({ ...formData, date: date.toISOString() })}
+              />
 
-            <Input name="venue" value={formData.venue} placeholder="Venue" onChange={handleChange} required />
-            <Input name="agenda" value={formData.agenda} placeholder="Agenda" onChange={handleChange} />
-            <Input name="capacity" type="number" value={formData.capacity} placeholder="Capacity" onChange={handleChange} required />
+              <Input name="venue" value={formData.venue} placeholder="Venue" onChange={handleChange} required />
+              <Input name="agenda" value={formData.agenda} placeholder="Agenda" onChange={handleChange} />
+              <Input name="capacity" type="number" value={formData.capacity} placeholder="Capacity" onChange={handleChange} required />
 
-            {/* Dynamic Speaker Fields */}
-            <div className="space-y-2">
-              <p className="text-lg font-semibold">Speakers</p>
-              {formData.speakers.map((speaker, index) => (
-                <div key={index} className="flex space-x-2">
-                  <Input placeholder="Name" value={speaker.name} onChange={(e) => handleChange(e, index, "name")} required />
-                  <Input placeholder="Designation" value={speaker.designation} onChange={(e) => handleChange(e, index, "designation")} required />
-                  {index > 0 && <Button type="button" className="bg-red-500" onClick={() => removeSpeaker(index)}>✖</Button>}
-                </div>
-              ))}
-              <Button type="button" className="mt-2 w-full" onClick={addSpeaker}>➕ Add Speaker</Button>
-            </div>
+              {/* Dynamic Speaker Fields */}
+              <div className="space-y-2">
+                <p className="text-lg font-semibold">Speakers</p>
+                {formData.speakers.map((speaker, index) => (
+                  <div key={index} className="flex space-x-2">
+                    <Input placeholder="Name" value={speaker.name} onChange={(e) => handleChange(e, index, "name")} required />
+                    <Input placeholder="Designation" value={speaker.designation} onChange={(e) => handleChange(e, index, "designation")} required />
+                    {index > 0 && <Button type="button" className="bg-red-500" onClick={() => removeSpeaker(index)}>✖</Button>}
+                  </div>
+                ))}
+                <Button type="button" className="mt-2 w-full" onClick={addSpeaker}>➕ Add Speaker</Button>
+              </div>
 
-            <Button type="button" className="mt-2 w-full" onClick={() => navigate(`/event-peoples/${eventId}`)}>Manage Guests and Attendees</Button>
-            <Button type="submit" className="w-full">Update Event</Button>
-          </form>
-        </CardContent>
-      </Card>
+              <Button type="button" className="mt-2 w-full" onClick={() => navigate(`/event-peoples/${eventId}`)}>Manage Guests and Attendees</Button>
+              <Button type="submit" className="w-full">Update Event</Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
