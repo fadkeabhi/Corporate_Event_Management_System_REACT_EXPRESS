@@ -19,15 +19,11 @@ Limited seat management
 Guest Management
 
 Invite external guests via email
-Secure guest access
 Event Dashboard & Reports
 
 Admin can track event participation
 Generate reports for HR
-Notifications & Reminders
 
-Email/SMS reminders for upcoming events
-Calendar sync feature
 Feedback & Review System
 
 Employees can provide event feedback
