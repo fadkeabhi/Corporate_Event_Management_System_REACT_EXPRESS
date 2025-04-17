@@ -32,7 +32,6 @@ export default function Register() {
             <Input placeholder="Name" {...register("name", { required: true })} className="h-12" />
             <Input placeholder="Email" {...register("email", { required: true })} className="h-12" />
             <Input type="password" placeholder="Password" {...register("password", { required: true })} className="h-12" />
-            <Input placeholder="Role (Admin, Manager, Employee)" {...register("role", { required: true })} className="h-12" />
             <Button type="submit" className="w-full h-12 text-lg">Register</Button>
           </form>
         </CardContent>

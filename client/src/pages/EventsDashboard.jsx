@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { axiosInstanceLoggedIn } from "@/services/api";
 
 export default function EventsDashboard() {
     const navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function EventsDashboard() {
     const [events, setEvents] = useState([]);
     const [filteredEvents, setFilteredEvents] = useState([]);
     const [filter, setFilter] = useState("attending");
+    const [isRegistering, setIsRegistering] = useState(false);
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -47,6 +49,37 @@ export default function EventsDashboard() {
             setFilteredEvents(events.filter((event) => isPast(new Date(event.date))));
         }
     }, [events, filter]);
+
+    const handleRegister = async (eventId) => {
+        if (!user) {
+            navigate("/login");
+            return;
+        }
+
+        try {
+            setIsRegistering(true);
+            await axiosInstanceLoggedIn.post(`/api/events/register/${eventId}`);
+            
+            // Update the local events state to reflect the registration
+            setEvents(events.map(event => {
+                if (event._id === eventId) {
+                    return {
+                        ...event,
+                        attendees: [...event.attendees, user]
+                    };
+                }
+                return event;
+            }));
+            
+            // Show success message
+            alert("Successfully registered for event!");
+        } catch (error) {
+            console.error("Error registering for event:", error);
+            alert(error.response?.data?.message || "Error registering for event");
+        } finally {
+            setIsRegistering(false);
+        }
+    };
 
     return (
         <div className="p-4 space-y-6 h-screen w-screen bg-gray-100">
@@ -115,7 +148,19 @@ export default function EventsDashboard() {
                                     {event?.createdBy?._id === user?._id && (
                                         <Button size="sm" onClick={() => navigate(`/event/${event._id}`)}>Edit</Button>
                                     )}
-                                    <Button size="sm">Register</Button>
+                                    {event.attendees.some(attendee => attendee._id === user?._id) ? (
+                                        <Button size="sm" variant="secondary" disabled>
+                                            Registered
+                                        </Button>
+                                    ) : (
+                                        <Button 
+                                            size="sm" 
+                                            onClick={() => handleRegister(event._id)} 
+                                            disabled={isRegistering}
+                                        >
+                                            {isRegistering ? "Registering..." : "Register"}
+                                        </Button>
+                                    )}
                                 </div>
                             </CardFooter>
                         </Card>
