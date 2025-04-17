@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import Header from "@/pages/Header";  // Import the Header component
+import Header from "@/pages/Header";
+import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,20 +12,46 @@ export default function Login() {
   const { register, handleSubmit } = useForm();
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { user, setUser, loading } = useAuth();
+
+  // Check if already logged in
+  useEffect(() => {
+    if (!loading && user) {
+      navigate("/dashboard");
+    }
+  }, [user, loading, navigate]);
 
   const onSubmit = async (data) => {
     try {
       const response = await loginUser(data);
       localStorage.setItem("token", response.data.token);
+      
+      // Update the user in context
+      if (response.data.user) {
+        setUser(response.data.user);
+      }
+      
       navigate("/dashboard");
     } catch (err) {
       setError("Invalid email or password");
     }
   };
 
+  // If still loading auth state, show loading indicator
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-100">
+        <Header />
+        <div className="flex-grow flex items-center justify-center">
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      <Header />  {/* Add the Header component */}
+      <Header />
       <div className="flex-grow flex items-center justify-center">
         <Card className="w-full max-w-lg shadow-lg">
           <CardHeader>
