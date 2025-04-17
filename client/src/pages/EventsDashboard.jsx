@@ -149,9 +149,30 @@ export default function EventsDashboard() {
                                     <Badge variant="outline">{event.agenda}</Badge>
                                     <div className="space-x-2">
                                         {event?.createdBy?._id === user?._id && (
-                                            <Button size="sm" onClick={() => navigate(`/event/${event._id}`)}>Edit</Button>
+                                            <>
+                                                <Button size="sm" onClick={() => navigate(`/event/${event._id}`)}>
+                                                    Edit
+                                                </Button>
+                                                {isPast(new Date(event.date)) && (
+                                                    <Button 
+                                                        size="sm" 
+                                                        variant="outline"
+                                                        onClick={() => navigate(`/event/${event._id}/feedback/list`)}
+                                                    >
+                                                        View Feedback
+                                                    </Button>
+                                                )}
+                                            </>
                                         )}
-                                        {event.attendees.some(attendee => attendee._id === user?._id) ? (
+                                        {isPast(new Date(event.date)) && event.attendees.some(attendee => attendee._id === user?._id) ? (
+                                            <Button 
+                                                size="sm" 
+                                                variant="outline"
+                                                onClick={() => navigate(`/event/${event._id}/feedback`)}
+                                            >
+                                                Leave Feedback
+                                            </Button>
+                                        ) : event.attendees.some(attendee => attendee._id === user?._id) ? (
                                             <Button size="sm" variant="secondary" disabled>
                                                 Registered
                                             </Button>

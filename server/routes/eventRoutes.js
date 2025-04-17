@@ -1,5 +1,5 @@
 const express = require("express");
-const { Event, User, Guest  } = require("../models/model"); // Adjust path if needed
+const { Event, User, Guest, Feedback  } = require("../models/model"); // Adjust path if needed
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -267,7 +267,119 @@ router.delete("/:eventId/remove-guest/:guestId", authMiddleware, async (req, res
   }
 });
 
+// Submit feedback for an event (only for attendees after event has ended)
+router.post("/:eventId/feedback", authMiddleware, async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const { rating, comment } = req.body;
+    const userId = req.user.id;
 
+    // Validate rating
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ message: "Rating must be between 1 and 5" });
+    }
+
+    // Find the event
+    const event = await Event.findById(eventId).populate("attendees");
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // Check if event has ended
+    const now = new Date();
+    if (new Date(event.date) > now) {
+      return res.status(400).json({ message: "Cannot submit feedback before event has ended" });
+    }
+
+    // Check if user was an attendee
+    const wasAttendee = event.attendees.some(attendee => 
+      attendee._id.toString() === userId
+    );
+    
+    if (!wasAttendee) {
+      return res.status(403).json({ message: "Only attendees can submit feedback" });
+    }
+
+    // Check if user has already submitted feedback
+    const existingFeedback = await Feedback.findOne({ 
+      event: eventId,
+      user: userId 
+    });
+
+    if (existingFeedback) {
+      // Update existing feedback
+      existingFeedback.rating = rating;
+      existingFeedback.comment = comment;
+      await existingFeedback.save();
+      return res.status(200).json({ message: "Feedback updated successfully" });
+    }
+
+    // Create new feedback
+    const feedback = new Feedback({
+      event: eventId,
+      user: userId,
+      rating,
+      comment
+    });
+
+    await feedback.save();
+    res.status(201).json({ message: "Feedback submitted successfully" });
+    
+  } catch (error) {
+    res.status(500).json({ message: "Error submitting feedback", error });
+  }
+});
+
+// Get feedback for an event
+router.get("/:eventId/feedback", async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    // Find all feedback for this event
+    const feedback = await Feedback.find({ event: eventId })
+      .populate("user", "name");
+
+    // Calculate average rating
+    let totalRating = 0;
+    feedback.forEach(item => {
+      totalRating += item.rating;
+    });
+    const averageRating = feedback.length > 0 ? totalRating / feedback.length : 0;
+
+    res.status(200).json({ 
+      feedback,
+      averageRating,
+      totalFeedback: feedback.length
+    });
+    
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching feedback", error });
+  }
+});
+
+
+// Get user's feedback for an event
+router.get("/:eventId/my-feedback", authMiddleware, async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const userId = req.user.id;
+
+    // Find feedback for this user and event
+    const feedback = await Feedback.findOne({ 
+      event: eventId,
+      user: userId 
+    });
+
+    if (!feedback) {
+      return res.status(404).json({ message: "No feedback found" });
+    }
+
+    res.status(200).json(feedback);
+    
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching feedback", error });
+  }
+});
 
 
 module.exports = router;

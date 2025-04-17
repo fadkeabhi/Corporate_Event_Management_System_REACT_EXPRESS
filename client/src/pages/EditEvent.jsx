@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { axiosInstanceLoggedIn } from "@/services/api";
+import { isPast } from "date-fns";
 
 export default function EditEvent() {
   const { user, loading } = useAuth();
@@ -127,6 +128,18 @@ export default function EditEvent() {
               </div>
 
               <Button type="button" className="mt-2 w-full" onClick={() => navigate(`/event-peoples/${eventId}`)}>Manage Guests and Attendees</Button>
+              
+              {formData.date && isPast(new Date(formData.date)) && (
+                <Button 
+                  type="button" 
+                  className="mt-2 w-full" 
+                  variant="outline"
+                  onClick={() => navigate(`/event/${eventId}/feedback/list`)}
+                >
+                  View Feedback
+                </Button>
+              )}
+              
               <Button type="submit" className="w-full">Update Event</Button>
             </form>
           </CardContent>

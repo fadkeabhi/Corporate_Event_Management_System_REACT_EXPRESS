@@ -5,6 +5,8 @@ import Register from "@/pages/Register";
 import EditEvent from "./pages/EditEvent";
 import EditEventPeoples from "./pages/EditEventGuestsAttendies";
 import EventsDashboard from "./pages/EventsDashboard";
+import EventFeedback from "./pages/EventFeedback"; 
+import EventFeedbackList from "./pages/EventFeedbackList"; // Add this import
 
 function App() {
   return (
@@ -17,7 +19,8 @@ function App() {
         <Route path="/event" element={<CreateEvent />} />
         <Route path="/event/:eventId" element={<EditEvent />} />
         <Route path="/event-peoples/:eventId" element={<EditEventPeoples />} />
-
+        <Route path="/event/:eventId/feedback" element={<EventFeedback />} />
+        <Route path="/event/:eventId/feedback/list" element={<EventFeedbackList />} /> {/* Add this new route */}
       </Routes>
     </Router>
   );
