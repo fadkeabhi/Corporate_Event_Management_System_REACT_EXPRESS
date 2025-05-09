@@ -1,0 +1,21 @@
+# Ignore node modules and env
+node_modules
+.env
+
+# Ignore logs
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Ignore build artifacts
+dist
+.vite
+
+# Ignore OS or IDE-specific files
+.DS_Store
+*.swp
+*.swo
+*.swn
+*.bak
+.idea
+.vscode

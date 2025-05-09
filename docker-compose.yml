@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  client:
+    build: ./client
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:5001
+    depends_on:
+      - server
+    networks:
+      - mern-net
+
+  server:
+    build: ./server
+    ports:
+      - "5001:5001"
+    environment:
+      - mongoURL=mongodb://mongo:27017/Corporate_vent_Management_System
+      - CORS_ORIGINS=http://localhost:5173,http://172.30.0.1:5173,http://localhost:4173
+      - JWT_SECRET=123
+    depends_on:
+      - mongo
+    networks:
+      - mern-net
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - mern-net
+
+volumes:
+  mongo-data:
+
+networks:
+  mern-net:

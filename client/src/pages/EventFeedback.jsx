@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import Header from "@/pages/Header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea"; // You'll need to create this component
+import { Textarea } from "@/components/ui/Textarea"; // You'll need to create this component
 import { Star, StarHalf, StarOff } from "lucide-react";
 import { format } from "date-fns";
 import { axiosInstanceLoggedIn } from "@/services/api";
