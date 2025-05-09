@@ -11,10 +11,9 @@ import EventFeedbackList from "./pages/EventFeedbackList"; // Add this import
 function App() {
   return (
     <Router>
-      <Routes>
+      <Routes><Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
         <Route path="/dashboard" element={<EventsDashboard />} />
         <Route path="/event" element={<CreateEvent />} />
         <Route path="/event/:eventId" element={<EditEvent />} />

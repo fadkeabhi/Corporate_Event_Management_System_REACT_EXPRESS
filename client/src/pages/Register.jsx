@@ -22,7 +22,8 @@ export default function Register() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen bg-cover bg-center" 
+             style={{ backgroundImage: 'url(../public/image.png)' }}>
       <Header />  {/* Add the Header component */}
       <div className="flex-grow flex items-center justify-center">
         <Card className="w-full max-w-lg shadow-lg">

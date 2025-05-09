@@ -12,12 +12,12 @@ export default function Header() {
   };
 
   return (
-    <header className="w-full bg-white border-b border-gray-200 shadow-sm p-4">
+    <header className="w-full bg-white/70 border-b border-gray-200 shadow-sm backdrop-blur-md p-4">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/dashboard" className="text-2xl font-bold text-gray-900">
-          Corporate Event Management System
+         EventEase by Discreet Solutions
         </Link>
-        
+
         <div className="flex items-center gap-4">
           {user ? (
             <>
@@ -25,10 +25,10 @@ export default function Header() {
                 Hello, {user.name}
               </span>
               <Link to="/dashboard">
-                <Button variant="outline" size="sm">Dashboard</Button>
+                <Button variant="secondary" size="sm">Dashboard</Button>
               </Link>
               <Link to="/event">
-                <Button variant="outline" size="sm">Create Event</Button>
+                <Button variant="secondary" size="sm">Create Event</Button>
               </Link>
               <Button variant="secondary" size="sm" onClick={handleLogout}>
                 Logout
@@ -37,10 +37,10 @@ export default function Header() {
           ) : (
             <>
               <Link to="/login">
-                <Button variant="outline" size="sm">Login</Button>
+                <Button variant="secondary" size="sm">Login</Button>
               </Link>
               <Link to="/register">
-                <Button variant="outline" size="sm">Register</Button>
+                <Button variant="secondary" size="sm">Register</Button>
               </Link>
             </>
           )}

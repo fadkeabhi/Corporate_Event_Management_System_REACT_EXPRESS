@@ -153,7 +153,8 @@ export default function EditEventPeoples() {
     if (loading) return <p>Loading...</p>;
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-100">
+        <div className="flex flex-col min-h-screen bg-cover bg-center" 
+        style={{ backgroundImage: 'url(../public/image.png)' }}>
             <Header />  {/* Add the Header component */}
             <div className="flex-grow flex items-center justify-center p-4">
                 <Card className="w-full max-w-3xl shadow-lg">

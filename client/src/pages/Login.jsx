@@ -40,7 +40,8 @@ export default function Login() {
   // If still loading auth state, show loading indicator
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen bg-gray-100">
+     <div className="flex flex-col min-h-screen bg-cover bg-center" 
+             style={{ backgroundImage: 'url(./image.jpg), linear-gradient(to right, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6))' }}>
         <Header />
         <div className="flex-grow flex items-center justify-center">
           <p>Loading...</p>
@@ -50,7 +51,8 @@ export default function Login() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen bg-cover bg-center" 
+             style={{ backgroundImage: 'url(../public/image.png)' }}>
       <Header />
       <div className="flex-grow flex items-center justify-center">
         <Card className="w-full max-w-lg shadow-lg">

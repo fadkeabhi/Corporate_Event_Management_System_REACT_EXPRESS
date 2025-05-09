@@ -104,7 +104,8 @@ export default function EventFeedback() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen bg-cover bg-center" 
+    style={{ backgroundImage: 'url(../public/image.png)' }}>
       <Header />
       <div className="p-4 space-y-6 flex-grow flex items-center justify-center">
         <Card className="w-full max-w-lg shadow-lg">

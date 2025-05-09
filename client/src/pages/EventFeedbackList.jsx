@@ -105,7 +105,8 @@ export default function EventFeedbackList() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen bg-cover bg-center" 
+    style={{ backgroundImage: 'url(../public/image.png)' }}>
       <Header />
       <div className="p-4 space-y-6 flex-grow">
         {event && (
@@ -115,7 +116,7 @@ export default function EventFeedbackList() {
                 <h1 className="text-3xl font-bold text-gray-900">{event.title}</h1>
                 <p className="text-gray-600">{format(new Date(event.date), "PPP")}</p>
               </div>
-              <Button variant="outline" onClick={() => navigate('/dashboard')}>
+              <Button variant="secondary" onClick={() => navigate('/dashboard')}>
                 Back to Dashboard
               </Button>
             </div>
